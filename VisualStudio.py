@@ -21,12 +21,19 @@ def GetDTE(  ) :
   except:
     return None
 
+def GetAllBreakpoints(  ) :
+  dte = GetDTE()
+  if dte :
+    deb = dte.Debugger
+    return deb.BreakPoints
+  return [] #return an empty list.
+
 def GetBreakpoints( aView, aOn ) :
   dte = GetDTE()
   if dte :
     deb = dte.Debugger
     if deb.BreakPoints :
-      return [ brk.FileLine
+      return [ brk
                for brk in deb.Breakpoints
                if ((aView.file_name() == brk.File) and (brk.Enabled == aOn))
              ]
@@ -36,7 +43,7 @@ def ShowBreakpoints( aView, aList, aType, aColor ) :
   aView.erase_regions(aType)
   if aList :
     g = lambda line: aView.line(aView.text_point(line - 1, 0))
-    regs = [ g(line) for line in aList ]
+    regs = [ g(brk.FileLine) for brk in aList ]
     aView.add_regions(aType, regs, aColor, "dot", sublime.HIDDEN)
 
 def UpdateBreakpoints( aView ) :
@@ -74,6 +81,20 @@ class PrintFileCommand( sublime_plugin.TextCommand ) :
             ad.PrintOut()
     except:
       sublime.status_message("PrintFile failed")
+
+class DteSelectBreakpointCommand( sublime_plugin.WindowCommand ) :
+  def run( self ) :
+    try:
+      brks = GetAllBreakpoints()
+      brkdata = [ b.File + ":" + str(b.FileLine) for b in brks ]
+      self.window.show_quick_panel(brkdata, functools.partial(self.on_done, brkdata))
+    except:
+      pass
+
+  def on_done( self, aBreaks, aIndex ) :
+    if aIndex != -1 :
+      path = aBreaks[aIndex]
+      vw = self.window.open_file(path, sublime.ENCODED_POSITION)
 
 class DteToggleBreakpointCommand( sublime_plugin.TextCommand ) :
   def run( self, edit ) :
