@@ -118,11 +118,16 @@ class DteSetFileLineCommand( sublime_plugin.TextCommand ) :
       sublime.status_message("SetFileAndLine failed")
 
 class DteCommandCommand( sublime_plugin.TextCommand ) :
-  def run( self, edit, command ) :
+  def run( self, edit, command, syncfile = True, save = False ) :
     try:
       dte = GetDTE()
       if dte :
-        SetFileAndLine(dte, self.view)
+        if save and self.view.is_dirty():
+          self.view.run_command("save")
+
+        if syncfile :
+          SetFileAndLine(dte, self.view)
+
         res = dte.ExecuteCommand(command, "")
     except Exception, ex:
       sublime.error_message(str(ex))
