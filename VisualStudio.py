@@ -1,36 +1,85 @@
+#----------------------------------------------------------------------
+# Copyright (c) 2013, Guy Carver
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+#     * Redistributions of source code must retain the above copyright notice,
+#       this list of conditions and the following disclaimer.
+#
+#     * Redistributions in binary form must reproduce the above copyright notice,
+#       this list of conditions and the following disclaimer in the documentation
+#       and/or other materials provided with the distribution.
+#
+#     * The name of Guy Carver may not be used to endorse or promote products # derived#
+#       from # this software without specific prior written permission.#
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# FILE    VisualStudio.py
+# BY      Guy Carver
+# DATE    06/05/2013 09:06 PM
+#----------------------------------------------------------------------
+
 import sublime, sublime_plugin
-import comtypes, functools
-#import time
-import comtypes.client as cc
+import functools
+import sys
+packagepath = sys.path[-1]
+sys.path.append(packagepath + "/VisualStudio/pywin32/win32")
+sys.path.append(packagepath + "/VisualStudio/pywin32/win32/lib")
+sys.path.append(packagepath + "/VisualStudio/pywin32")
+import VisualStudio.pywin32.win32com.client as win32
 
-dte_id = comtypes.GUID("{80cc9f66-e7d8-4ddd-85b6-d9e6cd0e93e2}")
+dte_settings = None
 
-dte_settings = sublime.load_settings("VisualStudio.sublime-settings")
-
-#I don't know why this still uses V8 but no other version # works.
-cc.GetModule((dte_id, 8, 0))
-
-import comtypes.gen.EnvDTE
 StepPause = .2
 
-def GetDTE(  ) :
-  try:
-    v = dte_settings.get("version", "11.0")
-    objectName = "VisualStudio.DTE." + v
-    return cc.GetActiveObject(objectName)
-  except:
-    return None
+def plugin_loaded(  ) :
+  global dte_settings
+  dte_settings = sublime.load_settings("VisualStudio.sublime-settings")
+
+class MyDTE :
+  def __init__( self, ExHandler = None ) :
+    try:
+      self.ex = ExHandler
+      v = dte_settings.get("version", "11.0")
+      objectName = "VisualStudio.DTE." + v
+#      print "Getting DTE " + objectName
+      #Might need to do this to ensure the com interface is generated.
+      # win32.gencache.EnsureDispatch(objectName)
+      self.dte = win32.GetActiveObject(objectName)
+    except Exception as ve:
+      if self.ex :
+        self.ex(ve)
+#      print ve
+      self.dte = None
+
+  def __enter__( self ) :
+    return self.dte
+
+  def __exit__( self, type, value, traceback ) :
+    #If we had and exception pass to the handler.
+    if value != None and self.ex != None :
+      self.ex(value)
+    return True
 
 def GetAllBreakpoints(  ) :
-  dte = GetDTE()
-  if dte :
-    deb = dte.Debugger
-    return deb.BreakPoints
+  with MyDTE() as dte :
+    return dte.Debugger.Breakpoints
   return [] #return an empty list.
 
 def GetBreakpoints( aView, aOn ) :
-  dte = GetDTE()
-  if dte :
+  with MyDTE() as dte :
     deb = dte.Debugger
     if deb.BreakPoints :
       return [ brk
@@ -49,47 +98,42 @@ def ShowBreakpoints( aView, aList, aType, aColor ) :
 def UpdateBreakpoints( aView ) :
   if aView.file_name() and dte_settings.get("showbreakpoints") :
     bon = GetBreakpoints(aView, True)
-    oncolor = dte_settings.get("bponcolor", "red")
+    oncolor = dte_settings.get("bpointoncolor", "red")
+    # print("On: " + str(len(bon)))
     ShowBreakpoints(aView, bon, "breakon", oncolor)
     boff = GetBreakpoints(aView, False)
-    offcolor = dte_settings.get("bpoffcolor", "gray")
+    offcolor = dte_settings.get("bpointoffcolor", "gray")
     ShowBreakpoints(aView, boff, "breakoff", offcolor)
 
 def SetFileAndLine( aDTE, aView ) :
+  # print("filename " + aView.file_name())
   res = aDTE.ExecuteCommand("File.OpenFile", aView.file_name())
-  if res == 0 :
+  if res == None :
     sel = aView.sel()[0]
     line, _ = aView.rowcol(sel.begin())
     line = line + 1
 #    print "line %d" % (line)
     res = aDTE.ExecuteCommand("Edit.Goto", str(line))
 
-#  print "res %d" % (res)
+  # print("res " + str(res))
   return res
 
 class PrintFileCommand( sublime_plugin.TextCommand ) :
   def run( self, edit ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        res = SetFileAndLine(dte, self.view)
-        if res == 0 :
-          ad = dte.ActiveDocument
-          #TODO: Make sure active document is the one we want to
-          # print before sending the print command.
-          if (ad and (ad.FullName == self.view.file_name())) :
-            ad.PrintOut()
-    except:
-      sublime.status_message("PrintFile failed")
+    with MyDTE(lambda x : sublime.status_message("PrintFile failed")) as dte :
+      res = SetFileAndLine(dte, self.view)
+      if res == None :
+        ad = dte.ActiveDocument
+        #TODO: Make sure active document is the one we want to
+        # print before sending the print command.
+        if (ad and (ad.FullName == self.view.file_name())) :
+          ad.PrintOut()
 
 class DteSelectBreakpointCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
-    try:
-      brks = GetAllBreakpoints()
-      brkdata = [ b.File + ":" + str(b.FileLine) for b in brks ]
-      self.window.show_quick_panel(brkdata, functools.partial(self.on_done, brkdata))
-    except:
-      pass
+    brks = GetAllBreakpoints()
+    brkdata = [ b.File + ":" + str(b.FileLine) for b in brks ]
+    self.window.show_quick_panel(brkdata, functools.partial(self.on_done, brkdata))
 
   def on_done( self, aBreaks, aIndex ) :
     if aIndex != -1 :
@@ -98,39 +142,31 @@ class DteSelectBreakpointCommand( sublime_plugin.WindowCommand ) :
 
 class DteToggleBreakpointCommand( sublime_plugin.TextCommand ) :
   def run( self, edit ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        res = SetFileAndLine(dte, self.view)
-        if res == 0 :
-          dte.ExecuteCommand("Debug.ToggleBreakPoint", "")
-          UpdateBreakpoints(self.view)
-    except:
-      sublime.status_message("ToggleBreakPoint failed")
+    with MyDTE(lambda x : sublime.status_message("ToggleBreakPoint failed")) as dte :
+      # print("Setting file and line.")
+      res = SetFileAndLine(dte, self.view)
+      if res == None :
+        # print("ToggleBreakPoint")
+        dte.ExecuteCommand("Debug.ToggleBreakPoint", "")
+        # print("UpdatingBreakPoint")
+        UpdateBreakpoints(self.view)
 
 class DteSetFileLineCommand( sublime_plugin.TextCommand ) :
   def run( self, edit ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        SetFileAndLine(dte, self.view)
-    except:
-      sublime.status_message("SetFileAndLine failed")
+    with MyDTE(lambda x : sublime.status_message("SetFileAndLine failed")) as dte :
+      # print("Setting fileandline")
+      SetFileAndLine(dte, self.view)
 
 class DteCommandCommand( sublime_plugin.TextCommand ) :
   def run( self, edit, command, syncfile = True, save = False ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        if save and self.view.is_dirty():
-          self.view.run_command("save")
+    with MyDTE(lambda x : sublime.error_message(str(x))) as dte :
+      if save and self.view.is_dirty():
+        self.view.run_command("save")
 
-        if syncfile :
-          SetFileAndLine(dte, self.view)
+      if syncfile :
+        SetFileAndLine(dte, self.view)
 
-        res = dte.ExecuteCommand(command, "")
-    except Exception, ex:
-      sublime.error_message(str(ex))
+      res = dte.ExecuteCommand(command, "")
 
 def SyncFileLine( aDTE, aWindow ) :
   doc = aDTE.ActiveDocument
@@ -149,51 +185,35 @@ def SyncFileLine( aDTE, aWindow ) :
 
 class DteStepIntoCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        deb = dte.Debugger
-        if deb.StepInto(False) == 0 :
-          time.sleep(StepPause)
-          SyncFileLine(dte, self.window)
-#        print "res %d" % (res)
-    except:
-      sublime.status_message("StepInto failed")
+    with MyDTE(lambda x : sublime.status_message("StepInto failed")) as dte :
+      deb = dte.Debugger
+      if deb.StepInto(False) == None :
+        time.sleep(StepPause)
+        SyncFileLine(dte, self.window)
+#      print "res %d" % (res)
 
 class DteStepOverCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        deb = dte.Debugger
-        if deb.StepOver(False) == 0 :
-          time.sleep(StepPause)
-          SyncFileLine(dte, self.window)
-#        print "res %d" % (res)
-    except:
-      sublime.status_message("StepOver failed")
+    with MyDTE(lambda x : sublime.status_message("StepOver failed")) as dte :
+      deb = dte.Debugger
+      if deb.StepOver(False) == None :
+        time.sleep(StepPause)
+        SyncFileLine(dte, self.window)
+#      print "res %d" % (res)
 
 class DteStepOutCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        deb = dte.Debugger
-        if deb.StepOut(False) == 0 :
-          time.sleep(StepPause)
-          SyncFileLine(dte, self.window)
-#        print "res %d" % (res)
-    except:
-      sublime.status_message("StepOut failed")
+    with MyDTE(lambda x : sublime.status_message("StepOut failed")) as dte :
+      deb = dte.Debugger
+      if deb.StepOut(False) == None :
+        time.sleep(StepPause)
+        SyncFileLine(dte, self.window)
+#      print "res %d" % (res)
 
 class DteSyncFileLineCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
-    try:
-      dte = GetDTE()
-      if dte :
-        SyncFileLine(dte, self.window)
-    except:
-      sublime.status_message("SyncFileLine failed")
+    with MyDTE(lambda x : sublime.status_message("SyncFileLine failed")) as dte :
+      SyncFileLine(dte, self.window)
 
 class DteBreakUpdater(sublime_plugin.EventListener):
   def on_activated( self, view ) :
@@ -202,28 +222,23 @@ class DteBreakUpdater(sublime_plugin.EventListener):
 class DtePickCmdCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
     #todo: Make a list of commands.
-    try:
-      dte = GetDTE()
-      if dte :
-        cmds = [ cmd.Name
-                 for cmd in dte.Commands
-                 if cmd != ""
-               ]
-        #Show Selection
-        self.window.show_quick_panel(cmds, functools.partial(self.on_done, cmds))
-    except:
-      sublime.status_message("PickCommand failed")
+    def err( ex ) : sublime.status_message("PickCommand failed")
+    with MyDTE(err) as dte :
+      cmds = [ cmd.Name
+               for cmd in dte.Commands
+               if cmd.Name != ''
+             ]
+      print(cmds)
+      #Show Selection
+      self.window.show_quick_panel(cmds, functools.partial(self.on_done, cmds))
 
   def on_done( self, aCommands, aIndex ) :
     if aIndex != -1 :
-      try:
-        dte = GetDTE()
-        if dte :
-          command = aCommands[aIndex]
-          #Run command
-          res = dte.ExecuteCommand(command, "")
-          sublime.status_message(command + " returned " + str(res))
+      def err( ex ) : sublime.error_message(str(ex))
+      with MyDTE(err) as dte :
+        command = aCommands[aIndex]
+        #Run command
+        res = dte.ExecuteCommand(command, "")
+        sublime.status_message(command + " returned " + str(res))
   #        print "%s" % aCommands[aIndex]
-      except Exception, ex:
-        sublime.error_message(str(ex))
 

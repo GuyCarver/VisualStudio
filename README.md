@@ -1,4 +1,4 @@
-# Sublime Text 2 VisualStudio Plugin
+# Sublime Text VisualStudio Plugin
 
 ## Install
 
