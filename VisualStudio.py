@@ -159,7 +159,7 @@ class DteSetFileLineCommand( sublime_plugin.TextCommand ) :
 
 class DteCommandCommand( sublime_plugin.TextCommand ) :
   def run( self, edit, command, syncfile = True, save = False ) :
-    with MyDTE(lambda x : sublime.error_message(str(x))) as dte :
+    with MyDTE(lambda x : sublime.status_message(str(x))) as dte :
       if save and self.view.is_dirty():
         self.view.run_command("save")
 
@@ -234,7 +234,7 @@ class DtePickCmdCommand( sublime_plugin.WindowCommand ) :
 
   def on_done( self, aCommands, aIndex ) :
     if aIndex != -1 :
-      def err( ex ) : sublime.error_message(str(ex))
+      def err( ex ) : sublime.status_message(str(ex))
       with MyDTE(err) as dte :
         command = aCommands[aIndex]
         #Run command
