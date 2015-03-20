@@ -34,7 +34,11 @@
 import sublime, sublime_plugin
 import functools
 import sys
-packagepath = sys.path[-1]
+#NOTE: The path we are looking for is Sublime Text 3\\Packages which
+# with -1 we are assuming is the last path in the list.  If not imports
+# will fail and you may have to adjust the index.
+packagepath = sys.path[-2]
+print(packagepath)
 sys.path.append(packagepath + "/VisualStudio/pywin32/win32")
 sys.path.append(packagepath + "/VisualStudio/pywin32/win32/lib")
 sys.path.append(packagepath + "/VisualStudio/pywin32")
@@ -82,9 +86,10 @@ def GetBreakpoints( aView, aOn ) :
   with MyDTE() as dte :
     deb = dte.Debugger
     if deb.BreakPoints :
+      fname = aView.file_name()
       return [ brk
                for brk in deb.Breakpoints
-               if ((aView.file_name() == brk.File) and (brk.Enabled == aOn))
+               if ((fname == brk.File) and (brk.Enabled == aOn))
              ]
   return [] #return an empty list.
 

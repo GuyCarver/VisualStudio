@@ -1,9 +1,9 @@
 [
-	{ "keys": ["f7"], "command": "dte_command", "args": {"command": "Build.BuildSelection", "save": "True"} },
+	{ "keys": ["f7"], "command": "dte_command", "args": {"command": "BGSBuildStartup.Connect.BGSBuildStartup", "save": "True"} },
 	{ "keys": ["shift+f7"], "command": "dte_command", "args": {"command": "Incredibuild.BuildSolution", "save": "True"} },
 	{ "keys": ["ctrl+shift+f7"], "command": "dte_command", "args": {"command": "Build.RebuildSelection", "save": "True"} },
 	{ "keys": ["ctrl+f7"], "command": "dte_command", "args": {"command": "Build.Compile", "save": "True"} },
-	{ "keys": ["shift+f1"], "command": "dte_command", "args": {"command": "VAssistX.FindSymbolDialog"} },
+	{ "keys": ["ctrl+k", "f9"], "command": "dte_command", "args": {"command": "VAssistX.FindSymbolDialog"} },
 	{ "keys": ["f9"], "command": "dte_toggle_breakpoint" },
 	{ "keys": ["ctrl+f9"], "command": "dte_set_file_line" },
 	{ "keys": ["ctrl+shift+f9"], "command": "dte_sync_file_line" },
