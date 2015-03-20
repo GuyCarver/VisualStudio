@@ -1,0 +1,13 @@
+[
+	{ "command": "dte_command", "args": {"command": "BGSBuildStartup.Connect.BGSBuildStartup", "save": "True"}, "caption": "VisualStudio: Build" },
+	{ "command": "dte_command", "args": {"command": "Incredibuild.BuildSolution", "save": "True"}, "caption": "VisualStudio: BuildSolution" },
+	{ "command": "dte_command", "args": {"command": "Build.RebuildSelection", "save": "True"}, "caption": "VisualStudio: Rebuild" },
+	{ "command": "dte_command", "args": {"command": "Build.Compile", "save": "True"}, "caption": "VisualStudio: Compile" },
+	{ "command": "dte_command", "args": {"command": "VAssistX.FindSymbolDialog"}, "caption": "VisualStudio: FindSymbol" },
+	{ "command": "dte_toggle_breakpoint", "caption": "VisualStudio: Toggle Breakpoint" },
+	{ "command": "dte_set_file_line", "caption": "VisualStudio: ToVS" },
+	{ "command": "dte_sync_file_line", "caption": "VisualStudio: FromVS" },
+	{ "command": "dte_step_over", "caption": "VisualStudio: StepOver" },
+	{ "command": "dte_step_into", "caption": "VisualStudio: StepInto" },
+	{ "command": "dte_step_out", "caption": "VisualStudio: StepOut" }
+]
