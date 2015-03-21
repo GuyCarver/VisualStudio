@@ -33,16 +33,15 @@
 
 import sublime, sublime_plugin
 import functools
-import sys
-#NOTE: The path we are looking for is Sublime Text 3\\Packages which
-# with -1 we are assuming is the last path in the list.  If not imports
-# will fail and you may have to adjust the index.
-packagepath = sys.path[-2]
-print(packagepath)
-sys.path.append(packagepath + "/VisualStudio/pywin32/win32")
-sys.path.append(packagepath + "/VisualStudio/pywin32/win32/lib")
-sys.path.append(packagepath + "/VisualStudio/pywin32")
+import sys, os
+
+packagepath = os.path.dirname(__file__)
+#print(packagepath)
+sys.path.append(packagepath + "/pywin32/win32")
+sys.path.append(packagepath + "/pywin32/win32/lib")
+sys.path.append(packagepath + "/pywin32")
 import VisualStudio.pywin32.win32com.client as win32
+import win32gui
 
 dte_settings = None
 
@@ -122,17 +121,6 @@ def SetFileAndLine( aDTE, aView ) :
 
   # print("res " + str(res))
   return res
-
-class PrintFileCommand( sublime_plugin.TextCommand ) :
-  def run( self, edit ) :
-    with MyDTE(lambda x : sublime.status_message("PrintFile failed")) as dte :
-      res = SetFileAndLine(dte, self.view)
-      if res == None :
-        ad = dte.ActiveDocument
-        #TODO: Make sure active document is the one we want to
-        # print before sending the print command.
-        if (ad and (ad.FullName == self.view.file_name())) :
-          ad.PrintOut()
 
 class DteSelectBreakpointCommand( sublime_plugin.WindowCommand ) :
   def run( self ) :
@@ -246,4 +234,24 @@ class DtePickCmdCommand( sublime_plugin.WindowCommand ) :
         res = dte.ExecuteCommand(command, "")
         sublime.status_message(command + " returned " + str(res))
   #        print "%s" % aCommands[aIndex]
+
+class FindWindowCommand(sublime_plugin.WindowCommand) :
+  def run( self ) :
+    self._handle = None
+    wildcard = "80CC9F66-E7D8-4DDD-85B6-D9E6CD0E93E2x0x8x0"
+#    wildcard = "Microsoft Visual Studio"
+    win32gui.EnumWindows(self._window_enum_callback, wildcard)
+    if self._handle != None:
+      win32gui.BringWindowToTop(self._handle)
+
+  def _window_enum_callback(self, hwnd, wildcard):
+    if (win32gui.GetWindowText(hwnd) == wildcard) :
+      self._handle = hwnd
+
+class DteDirCommand( sublime_plugin.WindowCommand ) :
+  def run( self ) :
+    #todo: Make a list of commands.
+    def err( ex ) : sublime.status_message("DteDirCommand failed")
+    with MyDTE(err) as dte :
+      print(dir(dte))
 
