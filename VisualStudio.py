@@ -221,7 +221,7 @@ class DtePickCmdCommand( sublime_plugin.WindowCommand ) :
                for cmd in dte.Commands
                if cmd.Name != ''
              ]
-      print(cmds)
+#      print(cmds)
       #Show Selection
       self.window.show_quick_panel(cmds, functools.partial(self.on_done, cmds))
 
