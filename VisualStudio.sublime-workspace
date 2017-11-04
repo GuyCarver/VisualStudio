@@ -1,0 +1,479 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Ex",
+				"ExecuteCommand"
+			],
+			[
+				"sublime",
+				"sublime_plugin"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "VisualStudio.py",
+			"settings":
+			{
+				"buffer_size": 8894,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Projects/FSharp/FileEdit/FileEdit.fs",
+			"settings":
+			{
+				"buffer_size": 32159,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/User/Test.py",
+			"settings":
+			{
+				"buffer_size": 2880,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+			"settings":
+			{
+				"buffer_size": 9018,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Default (Windows).sublime-keymap",
+			"settings":
+			{
+				"buffer_size": 899,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/Edit/edit.py",
+			"settings":
+			{
+				"buffer_size": 1772,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Discover Packages"
+			],
+			[
+				"packag",
+				"Preferences: Browse Packages"
+			],
+			[
+				"",
+				"Snippet: Do While Loop"
+			]
+		],
+		"width": 400.0
+	},
+	"console":
+	{
+		"height": 171.0,
+		"history":
+		[
+			"view.run_command(\"test_with\")",
+			"view.run_command(\"test\")",
+			"window.run_command(\"dte_pick_cmd\")",
+			"view.run_command(\"test\")",
+			"view.run_command()",
+			"view.run_command(\"test\")",
+			"view.run_command()"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": false,
+		"show_minimap": false,
+		"show_open_files": true,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/temp/AutoBackups.py",
+		"/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/VisualStudio/VisualStudio.sublime-settings",
+		"/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/ClipBoards/Clipboards.py",
+		"/C/Users/gcarver/AppData/Roaming/Sublime Text 3/NewWorkspace.txt"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"C:\\Users\\gcarver\\AppData\\Roaming\\Sublime Text 3\\Packages"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"console",
+			"print",
+			"dte",
+			"unindent",
+			"with",
+			"f11",
+			"dte.",
+			"unindent"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"  "
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "VisualStudio.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8894,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8633,
+								8633
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 236,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3131.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Projects/FSharp/FileEdit/FileEdit.fs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 32159,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3852,
+								3852
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 104,
+							"syntax": "Packages/F#/F#.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5565.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/User/Test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2880,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2395,
+								2395
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 61,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 510.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 2,
+					"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/User/Test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2880,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2177,
+								2177
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 453.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9018,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Default (Windows).sublime-keymap",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 899,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								899,
+								899
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 13,
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/C/Users/gcarver/AppData/Roaming/Sublime Text 3/Packages/Edit/edit.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1772,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1015,
+								1015
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 452.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 30.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"project": "VisualStudio.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"test.py",
+				"User\\Test.py"
+			],
+			[
+				"edit",
+				"Edit\\edit.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\gcarver\\AppData\\Roaming\\Sublime Text 3\\Packages\\MyOrigami\\origami.sublime-workspace"
+			]
+		],
+		"width": 443.0
+	},
+	"select_symbol":
+	{
+		"height": 35.0,
+		"selected_items":
+		[
+			[
+				"Test",
+				"Test3"
+			]
+		],
+		"width": 392.0
+	},
+	"settings":
+	{
+		"TM_CLASS": "TestClass"
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 230.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

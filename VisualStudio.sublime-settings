@@ -1,5 +1,5 @@
 {
-	"version" : "11.0",
+	"version" : "14.0",
 	"showbreakpoints" : true,
 	"detect_slow_plugins": false,
 	"bpointoncolor" : "red",

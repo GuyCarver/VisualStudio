@@ -34,12 +34,21 @@
 import sublime, sublime_plugin
 import functools
 import sys, os
+import re
 
 packagepath = os.path.dirname(__file__)
 #print(packagepath)
-sys.path.append(packagepath + "/pywin32/win32")
-sys.path.append(packagepath + "/pywin32/win32/lib")
-sys.path.append(packagepath + "/pywin32")
+
+'''Python3.3.5 and pywin32-220 must be installed on the computer for this plugin to work.
+  If they are not you will get import errors.'''
+
+sys.path.append(packagepath + "\\pywin32")
+sys.path.append(packagepath + "\\pywin32\\win32")
+sys.path.append(packagepath + "\\pywin32\\win32\\lib")
+sys.path.append(packagepath + "\\pywin32\\pythonwin")
+
+#print(sys.path)
+
 import VisualStudio.pywin32.win32com.client as win32
 import win32gui
 
@@ -55,16 +64,16 @@ class MyDTE :
   def __init__( self, ExHandler = None ) :
     try:
       self.ex = ExHandler
-      v = dte_settings.get("version", "11.0")
+      v = dte_settings.get("version", "14.0")
       objectName = "VisualStudio.DTE." + v
 #      print "Getting DTE " + objectName
       #Might need to do this to ensure the com interface is generated.
-      # win32.gencache.EnsureDispatch(objectName)
+      #win32.gencache.EnsureDispatch(objectName)
       self.dte = win32.GetActiveObject(objectName)
     except Exception as ve:
       if self.ex :
         self.ex(ve)
-#      print ve
+      print(ve)
       self.dte = None
 
   def __enter__( self ) :
@@ -85,11 +94,8 @@ def GetBreakpoints( aView, aOn ) :
   with MyDTE() as dte :
     deb = dte.Debugger
     if deb.BreakPoints :
-      fname = aView.file_name()
-      return [ brk
-               for brk in deb.Breakpoints
-               if ((fname == brk.File) and (brk.Enabled == aOn))
-             ]
+      fname = format(aView.file_name()).lower()
+      return [ brk for brk in deb.Breakpoints if ((fname == brk.File.lower()) and (brk.Enabled == aOn)) ]
   return [] #return an empty list.
 
 def ShowBreakpoints( aView, aList, aType, aColor ) :
@@ -103,7 +109,7 @@ def UpdateBreakpoints( aView ) :
   if aView.file_name() and dte_settings.get("showbreakpoints") :
     bon = GetBreakpoints(aView, True)
     oncolor = dte_settings.get("bpointoncolor", "red")
-    # print("On: " + str(len(bon)))
+#    print("On: " + str(len(bon)))
     ShowBreakpoints(aView, bon, "breakon", oncolor)
     boff = GetBreakpoints(aView, False)
     offcolor = dte_settings.get("bpointoffcolor", "gray")
@@ -144,11 +150,62 @@ class DteToggleBreakpointCommand( sublime_plugin.TextCommand ) :
         # print("UpdatingBreakPoint")
         UpdateBreakpoints(self.view)
 
+class DteEnableBreakpointCommand( sublime_plugin.TextCommand ) :
+  def run( self, edit ) :
+    with MyDTE(lambda x : sublime.status_message("EnableBreakPoint failed")) as dte :
+      # print("Setting file and line.")
+      res = SetFileAndLine(dte, self.view)
+      if res == None :
+        # print("ToggleBreakPoint")
+        dte.ExecuteCommand("Debug.EnableBreakPoint", "")
+        # print("UpdatingBreakPoint")
+        UpdateBreakpoints(self.view)
+
 class DteSetFileLineCommand( sublime_plugin.TextCommand ) :
   def run( self, edit ) :
     with MyDTE(lambda x : sublime.status_message("SetFileAndLine failed")) as dte :
       # print("Setting fileandline")
       SetFileAndLine(dte, self.view)
+
+compileFileName = re.compile("^.*Compile:[ \t]+([\w.]*).*", re.MULTILINE | re.IGNORECASE)
+
+#If on a secondary file attempt to find the main .cpp file to compile.  Either change filename extension to
+# .cpp or find the filename in the Compile: field of the file header.
+class DteCompilecppCommand( sublime_plugin.WindowCommand ) :
+  def run( self ) :
+    vw = self.window.active_view()
+    if not vw.is_scratch() :
+      if vw.is_dirty():
+        vw.run_command("save")
+
+      fname = self.FindCompileFileName(vw)
+      if not fname :
+        fname = vw.file_name()
+      #Get file name and make sure extension is .cpp.
+      if fname :
+        fpath, fext = os.path.splitext(fname)
+        fname = fpath + '.cpp'
+#        print("opening " + fname)
+        with MyDTE(lambda x : sublime.status_message("Compile failed")) as dte :
+          res = dte.ExecuteCommand("File.OpenFile", fname)
+          if res == None :
+            dte.ExecuteCommand("Build.Compile", "")
+          else :
+            print("Failed to compile " + fname)
+
+  #Look for Compile: in the header and use the filename indicated by that to compile instead of current file.
+  def FindCompileFileName( self, vw ) :
+    #This may be temporary.  Need to use a comment range perhaps?
+    name = None
+    hr = vw.extract_scope(1)
+    lt = vw.substr(hr)
+#    print("testing " + lt)
+    match = compileFileName.search(lt)
+    if (match != None) :
+      name = match.group(1)
+#      print("Compile: " + name)
+
+    return name
 
 class DteCommandCommand( sublime_plugin.TextCommand ) :
   def run( self, edit, command, syncfile = True, save = False ) :
