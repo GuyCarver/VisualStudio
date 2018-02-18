@@ -64,9 +64,9 @@ class MyDTE :
   def __init__( self, ExHandler = None ) :
     try:
       self.ex = ExHandler
-      v = dte_settings.get("version", "14.0")
+      v = dte_settings.get("version", "15.0")
       objectName = "VisualStudio.DTE." + v
-#      print "Getting DTE " + objectName
+#      print("Getting DTE " + objectName)
       #Might need to do this to ensure the com interface is generated.
       #win32.gencache.EnsureDispatch(objectName)
       self.dte = win32.GetActiveObject(objectName)
